@@ -1,0 +1,121 @@
+/* Bootstrap **overrides** & custom _scify theme variables. */
+/* stylelint-disable scss/double-slash-comment-empty-line-before */
+
+// Variables should be imported before Bootstrap's own variables in order to
+// override them, allowing a fully customised build adjusted to the site's
+// design specifications. This saves a lot of time and effort! For a complete
+// list of all of Bootstrap's variables that can be overridden, please:
+// @see 'node_modules/bootstrap/scss/_variables.scss'.
+
+@use 'sass:color';
+@use 'sass:map';
+@use 'functions/variable-functions' as export;
+
+/* Helper function to get colors for the $us-theme-colors. Do not remove. */
+@function use-color($color-name) {
+    @return export.var-color($us-prefix, $us-theme-colors, $color-name);
+}
+
+// -----------------------------------------------------------------------------
+
+/* _Scify Theme Constants : */
+
+// Values which determine the core functionality of _scify theme:
+$us-prefix: 'ilt'; // A 3-letter lowercase shortcode for the theme (e.g. dai).
+$us-ui-padding: 1rem; // Usually 1 rem.
+$us-ui-min-width: 320px; // This should be 320px or less (WCAG).
+$us-ui-backdrop-blur: 1rem;
+
+/* ILT Theme Color System */
+
+/* Set the _scify theme colors.  of _scify theme.
+ *
+ * Colors defined in this map, will be: 1) Exported to :root as CSS variables,
+ * using the $us-prefix (e.g. prefix-color & prefix-color-hsl), 2) Imported as
+ * Bootstrap colors and then exported as classes and CSS variables for all
+ * Bootstrap color properties (e.g. CSS: --bs-bg-color & class bs-bg-color). */
+$us-theme-colors: (
+    /// Neutral shades (scale from 100 to 900-dark):
+    'gray-200': #f5f5f5,
+    'gray-300': #d9d9d9,
+
+    // Gradient blue-neutral shades (scale from 100 to 900-dark):
+    'blue-gray-200': #f4f5f7,
+    'blue-gray-300': #dee2e6,
+
+    // Yellows:
+    'yellow-sec': #f0d151,
+    'yellow': #ecc625,
+
+    // Blues:
+    'blue-350': #496e83,
+    'blue-sec': #45687c,
+    'blue': #214b63,
+    'blue-800': #074657,
+    'blue-900': #040707 // used on blue modern widgets gradient
+);
+
+/* Bootstrap color system overrides: */
+$white: #fff; // constant for reference (should not be altered)
+$gray-100: #fafafa; // added to neutralise bootstrap's 'blue-ish' #f8f9fa
+$gray-200: use-color('gray-200');
+$gray-300: use-color('gray-300');
+$black: #000; // constant for reference (should not be altered)
+
+/* Bootstrap color palette overrides: */
+$body-bg: use-color('blue-gray-200');
+$body-color: $black;
+
+/* Bootstrap core overrides */
+// $border-radius: 0;
+
+/* Bootstrap optional parameters */
+$enable-gradients: true; // def: false
+$enable-shadows: false; // def: false
+$enable-negative-margins: true; // def: false
+
+// Bootstrap default variable overrides:
+$font-family-sans-serif: export.var-font('Source Sans 3 Variable');
+$headings-font-family: export.var-font('Quicksand Variable');
+$display-font-family: $headings-font-family;
+$numbers-font-family: export.var-font('Montserrat Variable');
+$primary: use-color('yellow');
+$link-color: use-color('blue-sec');
+
+// Focus:
+$focus-ring-color: color.adjust(use-color('yellow'), $alpha: -0.6);
+$input-focus-border-color: color.adjust(use-color('yellow'), $alpha: -0.3);
+
+// Button defaults
+// $btn-font-family: $headings-font-family;
+
+// Card defaults.
+$card-border-radius: 1.25rem;
+$card-border-width: 0.1875rem;
+
+// -----------------------------------------------------------------------------
+
+:root {
+    // Exports theme colors as CSS variables on root - do not alter.
+    @include export.var-css-variables-to-root($us-prefix, $us-theme-colors);
+
+    // Export any other repeatable theme variables
+    --ilt-header-box-shadow:
+        0 0.25rem 0.75rem 0 hsla(var(--ilt-gray-300-hsl) / 60%), 0 0.5rem 1.25rem 0 hsla(var(--ilt-gray-300-hsl) / 40%);
+    --ilt-box-shadow: 0 0 1.25rem 0 hsla(var(--ilt-blue-hsl) / 10%);
+    // @todo decide if these shadows are really needed or not.
+    --ilt-box-soft-shadow: 0 0 0.75rem 0 hsla(var(--ilt-blue-hsl) / 5%);
+    --ilt-box-softer-shadow: 0 0 0.75rem 0 hsla(var(--ilt-blue-hsl) / 2.5%);
+
+    // Theme & branding:
+    color-scheme: light only;
+    accent-color: use-color('yellow');
+
+    textarea,
+    input {
+        caret-color: use-color('yellow');
+    }
+}
+
+// DO NOT ALTER ----------------------------------------------------------------
+$prefixed-us-theme-colors: export.var-prefix-map-keys($us-prefix, $us-theme-colors);

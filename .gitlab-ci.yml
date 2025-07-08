@@ -1,0 +1,173 @@
+
+stages:
+  - build
+  - deploy-dev
+  - deploy-staging
+  - deploy-production
+  - release
+
+
+build:
+  stage: build
+  image: harbor.deployai.eu/cvm-public/ci-tools
+  script: |
+    export DATE_TAG=$(echo ${CI_PIPELINE_CREATED_AT} | cut -d'T' -f1 | tr -d '-')-${CI_COMMIT_SHA}
+    cat <<EOF > .env
+    VITE_APP_NAME="Business Navigator"
+    VITE_MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}
+    EOF
+    cat .env
+    echo "building docker image"
+    docker build -f deployment/docker/laravel/php/Dockerfile -t ${HARBOR_HOST}/${HARBOR_PATH}/deployai-interactive-landscape-tool .
+    docker tag ${HARBOR_HOST}/${HARBOR_PATH}/deployai-interactive-landscape-tool ${HARBOR_HOST}/${HARBOR_PATH}/deployai-interactive-landscape-tool:${DATE_TAG}
+    echo "authenticating to harbor"
+    docker login -u ${HARBOR_SCIFY_ROBOT_USER} -p ${HARBOR_SCIFY_ROBOT_PASSWORD} ${HARBOR_HOST}
+    echo "pushing image to harbor"
+    docker push ${HARBOR_HOST}/${HARBOR_PATH}/deployai-interactive-landscape-tool
+    docker push ${HARBOR_HOST}/${HARBOR_PATH}/deployai-interactive-landscape-tool:${DATE_TAG}
+  tags:
+    - shared
+  when: always
+  only:
+    - main
+
+deploy-dev:
+  stage: deploy-dev
+  image: harbor.deployai.eu/cvm-public/ci-tools
+  environment:
+    name: dev
+    url: https://itl.dev.deployai.eu
+  dependencies:
+    - build
+  script: |
+    echo "this is helm"
+    helm upgrade --install -n scify-${CI_ENVIRONMENT_NAME} scify-itl-${CI_ENVIRONMENT_NAME} ./deployment/helm \
+      -f deployment/helm/values-common.yaml \
+      -f deployment/helm/values-dev.yaml \
+      --set registry.password=${HARBOR_SCIFY_ROBOT_PASSWORD} \
+      --set registry.username=${HARBOR_SCIFY_ROBOT_USER} \
+      --set registry.registry=${HARBOR_HOST} \
+      --set database.password=${DATABASE_PASSWORD} \
+      --set database.rootpassword=${DATABASE_ROOT_PASSWORD} \
+      --set laravel.app_key=${LARAVEL_APP_KEY} \
+      --set laravel.basic_auth=${BASIC_AUTH} \
+      --set timestamp=${CI_COMMIT_TIMESTAMP} \
+      --set commitHash=${CI_COMMIT_SHA} \
+      --set laravel.mapbox.token=${MAPBOX_ACCESS_TOKEN} \
+      --set laravel.opencage_api_key=${OPENCAGE_API_KEY} \
+      --set laravel.default_admin_email=${DEFAULT_ADMIN_EMAIL} \
+      --set laravel.default_user_password=${DEFAULT_USER_PASSWORD} \
+
+  tags:
+    - shared
+  when: on_success
+  only:
+    - main
+
+deploy-staging:
+  stage: deploy-staging
+  image: harbor.deployai.eu/cvm-public/ci-tools
+  environment:
+    name: staging
+    url: https://itl.stage.deployai.eu
+  dependencies:
+    - build
+    - deploy-dev
+  needs:
+    - job: deploy-dev
+    - job: build
+  script: |
+    echo "this is helm"
+    export DATE_TAG=$(echo ${CI_PIPELINE_CREATED_AT} | cut -d'T' -f1 | tr -d '-')-${CI_COMMIT_SHA}
+    export KUBECONFIG=/builds/scify/interactive-landscape-tool.tmp/KUBECONFIG_STAGE
+    helm upgrade --install -n scify-${CI_ENVIRONMENT_NAME} scify-itl-${CI_ENVIRONMENT_NAME} ./deployment/helm \
+      -f deployment/helm/values-common.yaml \
+      -f deployment/helm/values-staging.yaml \
+      --set registry.password=${HARBOR_SCIFY_ROBOT_PASSWORD} \
+      --set registry.username=${HARBOR_SCIFY_ROBOT_USER} \
+      --set image.tag=${DATE_TAG} \
+      --set registry.registry=${HARBOR_HOST} \
+      --set database.password=${DATABASE_PASSWORD} \
+      --set database.rootpassword=${DATABASE_ROOT_PASSWORD} \
+      --set laravel.app_key=${LARAVEL_APP_KEY} \
+      --set laravel.basic_auth=${BASIC_AUTH} \
+      --set timestamp=${CI_COMMIT_TIMESTAMP} \
+      --set commitHash=${CI_COMMIT_SHA} \
+      --set laravel.opencage_api_key=${OPENCAGE_API_KEY} \
+      --set laravel.default_admin_email=${DEFAULT_ADMIN_EMAIL} \
+      --set laravel.default_user_password=${DEFAULT_USER_PASSWORD} \
+      --set laravel.mapbox.token=${MAPBOX_ACCESS_TOKEN}
+  tags:
+    - shared
+  allow_failure: false
+  when: manual
+  manual_confirmation: 'Are you sure you want to deploy to staging? This will overwrite the current deployment.'
+  only:
+    - main
+
+
+
+deploy-production:
+  stage: deploy-production
+  image: harbor.deployai.eu/cvm-public/ci-tools
+  environment:
+    name: production
+    url: https://business-navigator.aiodp.ai
+  dependencies:
+    - build
+    - deploy-dev
+    - deploy-staging
+  script: |
+    echo "this is helm"
+    export DATE_TAG=$(echo ${CI_PIPELINE_CREATED_AT} | cut -d'T' -f1 | tr -d '-')-${CI_COMMIT_SHA}
+    export KUBECONFIG=/builds/scify/interactive-landscape-tool.tmp/KUBECONFIG_PROD
+    helm upgrade --install -n scify-${CI_ENVIRONMENT_NAME} scify-itl-${CI_ENVIRONMENT_NAME} ./deployment/helm \
+      -f deployment/helm/values-common.yaml \
+      -f deployment/helm/values-production.yaml \
+      --set registry.password=${HARBOR_SCIFY_ROBOT_PASSWORD} \
+      --set registry.username=${HARBOR_SCIFY_ROBOT_USER} \
+      --set registry.registry=${HARBOR_HOST} \
+      --set database.password=${DATABASE_PASSWORD} \
+      --set image.tag=${DATE_TAG} \
+      --set database.rootpassword=${DATABASE_ROOT_PASSWORD} \
+      --set laravel.app_key=${LARAVEL_APP_KEY} \
+      --set laravel.basic_auth=${BASIC_AUTH} \
+      --set laravel.opencage_api_key=${OPENCAGE_API_KEY} \
+      --set laravel.default_admin_email=${DEFAULT_ADMIN_EMAIL} \
+      --set laravel.default_user_password=${DEFAULT_USER_PASSWORD} \
+      --set timestamp=${CI_COMMIT_TIMESTAMP} \
+      --set laravel.mapbox.token=${MAPBOX_ACCESS_TOKEN} \
+      --set commitHash=${CI_COMMIT_SHA}
+  tags:
+    - shared
+  allow_failure: false
+  when: manual
+  manual_confirmation: 'Are you sure you want to deploy to production? This will overwrite the current deployment.'
+  only:
+    - main
+
+      # release:
+      #   stage: release
+      #   dependencies:
+      #   - build
+      #   - deploy-dev
+      #   - deploy-staging
+      #   - deploy-production
+      #
+      # needs:
+      # - job: deploy-dev
+      # - job: build
+      # - job: deploy-staging
+    # - job: deploy-production
+
+#   script: |
+#     echo "creating release"
+#   release:
+#     name: 'interactive-landscape-tool'
+#     tag_name: '${DATE_TAG}'
+#     description: 'Release of Interactive Landscape Tool'
+#   tags:
+#     - shared
+#   when: on_success
+#   only:
+#   - main

@@ -1,0 +1,71 @@
+services:
+
+  php:
+    build:
+      context: ../../../
+      dockerfile: deployment/docker/laravel/php/Dockerfile
+    container_name: interactive-landscape-tool
+    environment: # see: https://serversideup.net/open-source/docker-php/docs/reference/environment-variable-specification
+      - DB_HOST=interactive-landscape-tool_db
+      - DB_PORT=3306
+      - DB_DATABASE=il-tool_db
+      - DB_USERNAME=il-tool_db_user
+      - DB_PASSWORD=${DB_PASSWORD}
+      - AUTORUN_ENABLED=true
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - interactive-landscape-tool-storage:/var/www/html/public/storage/app
+      - interactive-landscape-tool-cache:/var/www/html/public/bootstrap/app/cache
+      - interactive-landscape-tool-logs:/var/www/html/public/storage/logs
+    networks:
+      - interactive-landscape-tool_net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    build:
+      context: db
+    container_name: interactive-landscape-tool_db
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_DATABASE=il-tool_db
+      - MYSQL_USER=il-tool_db_user
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - interactive-landscape-tool_db:/var/lib/mysql
+    networks:
+      - interactive-landscape-tool_net
+
+
+
+
+  # supervisor:
+  #   container_name: supervisor
+  #   build:
+  #     context: ./
+  #     dockerfile: supervisor/Dockerfile.supervisor
+  #   restart: unless-stopped
+  #   environment:
+  #     - APP_ROOT=/var/www/html
+  #     - QUEUE_DRIVER=${QUEUE_CONNECTION}
+  #     - OPTIONS=${QUEUE_OPTIONS}
+  #     - NUM_PROCS=${NUM_PROCS}
+  #   networks:
+  #     - interactive-landscape-tool_net
+  #   depends_on:
+  #     - php
+  #     - db
+
+
+volumes:
+  interactive-landscape-tool_db:
+  interactive-landscape-tool-storage:
+  interactive-landscape-tool-cache:
+  interactive-landscape-tool-logs:
+
+networks:
+  interactive-landscape-tool_net:
+    external: false
+    name: interactive-landscape-tool_net

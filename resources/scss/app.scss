@@ -1,0 +1,595 @@
+/* The Main CSS file for ILT, a variation of the _scify theme. */
+
+// _scify Bootstrap theme - a customised deconstructed built.
+// @see https://getbootstrap.com/docs/5.3/customize/sass/
+// Please do not use: @import "bootstrap/scss/bootstrap";.
+
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:string';
+
+// Bootstrap initial required functions.
+// These are the basic functions on which Bootstrap depends on.
+@import 'bootstrap/scss/functions';
+
+// Default Bootstrap overrides & _scify custom variables.
+// Feel free to customise these variables for your own build.
+@import 'variables';
+
+/* *** --- DO NOT ALTER #1: Required Bootstrap Components --- *** */
+/* stylelint-disable scss/double-slash-comment-empty-line-before */
+// Bootstrap required variables:
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+// Bootstrap extended with _scify color palette (this is optional)
+$theme-colors: map.merge($theme-colors, $prefixed-us-theme-colors);
+
+/* *** --- DO NOT ALTER #2: Required Bootstrap Components --- *** */
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/reboot';
+
+/* *** --- OPTIMISE: Optional Bootstrap Components --- *** */
+
+// Feel free to comment out whatever is not needed.
+@import 'bootstrap/scss/type';
+@import 'bootstrap/scss/images';
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+// @import "bootstrap/scss/tables";
+@import 'bootstrap/scss/forms';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/transitions';
+@import 'bootstrap/scss/dropdown';
+@import 'bootstrap/scss/button-group';
+@import 'bootstrap/scss/nav';
+@import 'bootstrap/scss/navbar'; // Requires nav
+@import 'bootstrap/scss/card';
+@import 'bootstrap/scss/breadcrumb';
+// @import "bootstrap/scss/accordion";
+@import 'bootstrap/scss/pagination';
+@import 'bootstrap/scss/badge';
+@import 'bootstrap/scss/alert';
+@import 'bootstrap/scss/progress';
+@import 'bootstrap/scss/list-group';
+@import 'bootstrap/scss/close';
+@import 'bootstrap/scss/toasts';
+// @import "bootstrap/scss/modal"; // Requires transitions
+// @import "bootstrap/scss/tooltip";
+@import 'bootstrap/scss/popover';
+// @import "bootstrap/scss/carousel";
+// @import "bootstrap/scss/spinners";
+@import 'bootstrap/scss/offcanvas'; // Requires transitions
+@import 'bootstrap/scss/placeholders';
+
+/* *** --- DO NOT ALTER #3: Required Bootstrap Components --- *** */
+// Bootstrap required helpers (do not comment out):
+@import 'bootstrap/scss/helpers';
+// Bootstrap utilities (do not comment out):
+@import 'bootstrap/scss/utilities/api';
+
+/* Final imports for _scify theme: */
+
+// Support for self-hosted fonts:
+@import 'fonts';
+
+// Modern CSS Reset.
+@import 'reset';
+
+// Components:
+@import 'components/header-navbar';
+@import 'components/widget-number-icon';
+
+// -----------------------------------------------------------------------------
+
+/* Main styling */
+
+html {
+    // If using smooth scroll, only do it accessibly:
+    @media (prefers-reduced-motion: no-preference) {
+        scroll-behavior: smooth;
+    }
+}
+
+body {
+    @extend %bg-main-gradient;
+
+    min-width: $us-ui-min-width;
+    min-block-size: 100dvb;
+    margin: 0;
+    padding: 0;
+
+    #app {
+        // is this even a valid thing?
+        display: flex;
+        flex-direction: column;
+        min-height: 100dvb;
+
+        main {
+            flex: 1;
+        }
+    }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    overflow-wrap: normal;
+
+    @include media-breakpoint-up(sm) {
+        text-wrap: balance;
+    }
+}
+
+h1 {
+    @include font-size(4rem);
+    // Always use text-wrap balance on h1.
+    text-wrap: balance;
+}
+
+h2 {
+    @include font-size(3.2rem);
+}
+
+p {
+    font-size: 1.125rem;
+    text-wrap: pretty;
+
+    &.lead {
+        text-wrap: balance;
+    }
+}
+
+.min-dvh-100 {
+    min-height: 100dvh;
+}
+
+.max-ch-70 {
+    max-width: 70ch;
+}
+
+.text-wrap-pretty {
+    text-wrap: pretty;
+}
+
+.text-wrap-balance {
+    text-wrap: balance;
+}
+
+.bg-opacity-20 {
+    --bs-bg-opacity: 0.2;
+}
+
+.bg-opacity-50 {
+    --bs-bg-opacity: 0.5;
+}
+
+.bg-opacity-75 {
+    --bs-bg-opacity: 0.75;
+}
+
+.bg-opacity-100 {
+    --bs-bg-opacity: 1;
+}
+
+.text-size-24 {
+    font-size: 1.5rem;
+}
+
+.lucide-icon {
+    display: inline-block;
+
+    svg.lucide {
+        width: 1em;
+        height: 1em;
+    }
+}
+
+/* Buttons */
+.btn {
+    // Gradients should be disabled for buttons.
+    --bs-gradient: none;
+}
+
+.btn-primary,
+.btn-ilt-yellow-sec {
+    // Makes the ring for focus-visible state softer, as the one defined by
+    // Bootstrap was almost identical to the yellow color of the btn itself.
+    // --bs-btn-focus-box-shadow: 0 0 0 0.25em rgba(var(--bs-btn-focus-shadow-rgb), 80%);
+    --bs-btn-focus-box-shadow: 0 0 0 0.25em rgba(var(--bs-black-rgb), 90%);
+}
+
+.btn-xl {
+    font-family: $headings-font-family;
+    // Creating a button style via Bootstrap's utilities:
+    @include button-size($btn-padding-y-lg * 1.625, $btn-padding-x-lg * 4, 1.125rem, $btn-border-radius);
+}
+
+/* Spacings */
+main section {
+    padding-block: $us-ui-padding * 3;
+    // scroll-margin-block-start: $us-ui-padding * 3;
+
+    &.section-hero.bg-3d-grid-container {
+        // Padding is transferred to the first div which has the background.
+        padding-block: 0;
+    }
+
+    &.section-hero + section {
+        // padding-block-end: $us-ui-padding * 3;
+        // scroll-margin-block-start: $us-ui-padding * 3;
+    }
+}
+
+main {
+    section.section-hero {
+        &.bg-3d-grid-container > div.bg-3d-grid {
+            position: relative;
+            // Should contain just one element aligned to the center.
+            display: flex;
+            align-items: center;
+            min-height: 256px;
+            overflow: clip;
+
+            // Padding is transferred to the first div which has the background.
+            padding-block: $us-ui-padding * 2;
+
+            @include media-breakpoint-up(md) {
+                padding-block: $us-ui-padding * 2 * 1.5;
+            }
+
+            .container-xxl {
+                z-index: 2;
+            }
+
+            &::before {
+                display: block;
+                position: absolute;
+                content: '';
+                width: 100%;
+                height: 100%;
+                inset: 0;
+                z-index: -1;
+                background: #fff;
+            }
+
+            &::after {
+                display: block;
+                position: absolute;
+                content: '';
+                opacity: var(--bs-bg-opacity);
+                inset: 0;
+                z-index: 0;
+                transition: background-size 0.3725s ease-in;
+                // Or else the backgrounds collide (in absolute pixels).
+                background:
+                    url('@/images/hero-grid-top-left.svg') 0 0 no-repeat,
+                    url('@/images/hero-grid-bottom-right.svg') 100% 100% no-repeat;
+                background-size: 541px 240px; // absolute minimum ~= min-height
+
+                @include media-breakpoint-up(sm) {
+                    background-size: 657px 291px;
+                }
+
+                @include media-breakpoint-up(md) {
+                    background-size: 750px 333px;
+                }
+
+                @include media-breakpoint-up(lg) {
+                    background-size: 860px 382px;
+                }
+
+                @include media-breakpoint-up(xl) {
+                    background-size: 970px 431px;
+                }
+
+                @include media-breakpoint-up(xxl) {
+                    background-size: 1080px 480px;
+                }
+            }
+        }
+
+        + .section-map {
+            margin-top: -3rem;
+        }
+    }
+
+    section.section-metrics {
+        // @extend %bg-grid-millimeter;
+    }
+
+    section.section-join {
+        .col {
+            overflow: clip;
+        }
+    }
+
+    section.section-links {
+        p.lead {
+            min-height: 2lh;
+        }
+    }
+
+    section.section-error {
+        margin: 0;
+        padding: 0;
+        background-color: #{color.mix(use-color('yellow'), transparent, 80%)};
+
+        @extend %bg-grid-millimeter-animated;
+
+        &::before {
+            --line: #{color.mix(use-color('yellow'), transparent, 90%)};
+        }
+    }
+
+    section .lead {
+        @include font-size(2rem);
+    }
+}
+
+.placeholder-square {
+    width: 100%;
+    max-height: 24rem;
+    aspect-ratio: 1;
+}
+
+footer {
+    @include media-breakpoint-up(md) {
+        svg.logo {
+            max-width: 7rem;
+        }
+
+        svg.flag {
+            max-width: 6rem;
+        }
+    }
+
+    a.deploy-ai:focus-visible {
+        outline-offset: $focus-ring-width;
+        outline: $focus-ring-width solid $focus-ring-color;
+    }
+
+    .footer-links-minor,
+    .footer-links {
+        button {
+            background: inherit;
+            border: none;
+            text-decoration: underline;
+        }
+
+        a:focus-visible:not(.footer-link-icon),
+        button:focus-visible {
+            outline: none;
+            background-color: $focus-ring-color;
+        }
+
+        a.footer-link-icon:focus-visible {
+            outline: $focus-ring-width solid $focus-ring-color;
+            background-color: $focus-ring-color;
+        }
+    }
+}
+
+/* Cards */
+.organisation-card {
+    box-shadow: var(--ilt-box-soft-shadow);
+
+    .card-body {
+        box-shadow: 0 -1.25rem 1.25rem 0 hsla(var(--ilt-blue-hsl) / 5%);
+
+        .card-location {
+            position: absolute;
+            content: '';
+            top: -1.1rem; // @todo magic number
+            background: var(--bs-white);
+            color: var(--ilt-blue);
+
+            .lucide {
+                color: var(--bs-gray-500);
+            }
+        }
+
+        .card-title {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            height: 2lh;
+            max-height: 2lh;
+            line-height: 1.375;
+            overflow: clip;
+            text-wrap: balance;
+        }
+
+        .card-description {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 4;
+            height: 4lh;
+            max-height: 4lh;
+            line-height: 1.375;
+            overflow: clip;
+            text-wrap: pretty;
+        }
+    }
+
+    .card-img {
+        border-radius: inherit;
+
+        .img-logo {
+            border-radius: inherit;
+            border-end-start-radius: 0;
+            border-end-end-radius: 0;
+            padding: 2rem;
+            background: var(--bs-white);
+            height: 160px; /* Set height to match your intended size */
+            display: flex;
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally if needed */
+            overflow: hidden; /* Clip any excess part of the image */
+
+            img {
+                max-height: 100%; /* Ensures image fits within the height */
+                max-width: 100%; /* Ensures the width is contained within the available space */
+                object-fit: contain; /* Prevents distortion, keeping aspect ratio intact */
+                height: auto; /* Maintain aspect ratio */
+                width: auto; /* Maintain aspect ratio */
+            }
+        }
+
+        .img-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            overflow: clip;
+            aspect-ratio: 4/3;
+            border: none;
+            outline: none;
+            border-radius: inherit;
+            border-end-start-radius: 0;
+            border-end-end-radius: 0;
+            background: var(--bs-white);
+            max-height: 10rem;
+
+            span,
+            svg {
+                display: block;
+                text-align: center;
+                align-content: center;
+                font-size: 6rem;
+                opacity: 0.25;
+            }
+        }
+    }
+}
+
+.organisation-details-card {
+    box-shadow: var(--ilt-box-softer-shadow);
+
+    .card-content {
+        > * {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+            white-space: nowrap;
+            overflow: clip;
+        }
+
+        .card-detail {
+            font-family: $numbers-font-family;
+            font-size: 2.75rem;
+            padding-top: 0.69rem; // magic number alert! (*MN1: see below *MN2)
+        }
+    }
+}
+
+.organisation-category-card {
+    box-shadow: var(--ilt-box-softer-shadow);
+
+    ul.list-unstyled {
+        min-height: 2lh; // magic number alert! (*MN2: see above *MN1)
+    }
+}
+
+/* Markdown parser */
+
+.markdown {
+    font-size: 1.125em;
+
+    .markdown-header-top {
+        margin-block-end: 1.5rem;
+    }
+
+    .markdown-header-top:not(:first-child) {
+        margin-top: 3rem;
+    }
+}
+
+/* Decorations */
+
+/* Decorative elements */
+%bg-main-gradient {
+    background: linear-gradient(
+        180deg,
+        use-color('blue-gray-200') 0%,
+        use-color('blue-gray-200') 50%,
+        use-color('blue-gray-300') 100%
+    );
+}
+
+%bg-grid-millimeter {
+    --size: 1rem;
+    --big-size: 8rem;
+    --line: #{color.mix(use-color('blue'), transparent, 4%)};
+    --mask: linear-gradient(transparent 0%, white 1%, white 95%, transparent 100%);
+
+    position: relative;
+
+    &::before {
+        background:
+            linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 0 0 / var(--size) var(--size),
+            linear-gradient(var(--line) 1px, transparent 1px var(--size)) 0 0 / var(--size) var(--size),
+            linear-gradient(90deg, var(--line) 1px, transparent 1px var(--big-size)) 0 0 / var(--big-size)
+                var(--big-size),
+            linear-gradient(var(--line) 1px, transparent 1px var(--big-size)) 0 0 / var(--big-size) var(--big-size);
+        position: absolute;
+        content: '';
+        inset: 0;
+        z-index: -1;
+        mask: var(--mask);
+    }
+}
+
+%bg-grid-millimeter-animated {
+    overflow: clip;
+
+    @extend %bg-grid-millimeter;
+
+    &::before {
+        @media (prefers-reduced-motion: no-preference) {
+            --mask: radial-gradient(white, transparent);
+
+            animation: 30s pulse-millimeter-error ease-out 1 forwards;
+            will-change: transform;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            rotate: 25deg;
+        }
+    }
+}
+
+@keyframes pulse-millimeter-error {
+    // 60s animation (ease-out 1 forwards).
+    to {
+        rotate: 25deg;
+        scale: 1.25;
+    }
+}
+
+@keyframes pulse-millimeter-rotating {
+    // 320s animation (linear infinite).
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.5) rotate(180deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .cookies-consent-banner .col-lg-4 {
+        width: 32%;
+    }
+}

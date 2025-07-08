@@ -1,0 +1,61 @@
+/* Dependency for _variables.scss */
+
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:math';
+
+/* Native font stack. ** DO NOT ALTER THIS VALUE  */
+// @link https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/
+$native-font-stack: "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'";
+
+/* Simple function to export a single color out of the $us-theme-colors map. */
+@function var-color($us-prefix, $us-theme-colors, $color-name) {
+    $key: '#{$color-name}';
+    $color: map.get($us-theme-colors, $key);
+
+    @if not $color {
+        @error "Color `#{$color-name}` with key #{$key} not found in color map (#{$color}).";
+    }
+
+    @return $color;
+}
+
+/* Simple function to export and use a font with a native fall-back stack. */
+@function var-font($font-family) {
+    @return '#{$font-family}', #{$native-font-stack};
+}
+
+/* Helper function to add a prefix to all keys in a map. */
+@function var-prefix-map-keys($prefix, $map) {
+    $prefixed-map: ();
+
+    @each $key, $value in $map {
+        $new-key: '#{ $prefix }-#{ $key }';
+        $prefixed-map: map.set($prefixed-map, $new-key, $value);
+    }
+
+    @return $prefixed-map;
+}
+
+/* Helper function to round values to 2 decimal places. */
+@function var-round($value, $precision: 2) {
+    $factor: 1;
+
+    @for $i from 1 through $precision {
+        $factor: $factor * 10;
+    }
+
+    @return math.round(math.div($value * $factor, $factor));
+}
+
+/* Mixin to export _scify $ilt-theme-colors as both HEX & HSLA (in :root). */
+// noinspection SassScssResolvedByNameOnly
+@mixin var-css-variables-to-root($us-prefix, $us-theme-colors) {
+    // All colors will be exported as CSS variables (prefix: --us-clr-):
+    @each $name, $value in $us-theme-colors {
+        --#{ $us-prefix }-#{ $name }: #{$value};
+        --#{ $us-prefix }-#{ $name }-hsl: #{var-round(color.hue($value))}
+            #{var-round(color.saturation($value))}
+            #{var-round(color.lightness($value))};
+    }
+}

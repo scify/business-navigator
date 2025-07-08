@@ -1,0 +1,266 @@
+// Widget Sass dependencies:
+@use 'sass:math';
+@use 'sass:list';
+
+// Widget Sass variables:
+$widget-spacing: 0.5rem; // default $ui-spacing * 0.5
+$widget-border-radius: 1.25rem; // default $border-radius
+
+// Widget Sass functions:
+@function generate-rainbow-gradient($steps, $saturation: 70, $lightness: 50) {
+    $gradient-stops: ();
+
+    @for $i from 0 through $steps - 1 {
+        $percentage: math.round((math.div($i, $steps - 1)) * 100%);
+        $hue: (math.div($i, $steps - 1)) * 360;
+        $color: hsl($hue, $saturation * 1%, $lightness * 1%);
+        $gradient-stops: list.append($gradient-stops, $color + ' ' + $percentage);
+    }
+
+    $result: '';
+
+    @for $i from 1 through list.length($gradient-stops) {
+        $result: $result + list.nth($gradient-stops, $i);
+
+        @if $i != list.length($gradient-stops) {
+            $result: $result + ', ';
+        }
+    }
+
+    @return $result;
+}
+
+// Widget CSS animations:
+@keyframes rotate-rainbow-gradient {
+    0%,
+    100% {
+        opacity: 0.6;
+
+        --rainbow-angle: 25deg;
+    }
+
+    50% {
+        opacity: 0.4;
+
+        --rainbow-angle: 385deg;
+    }
+}
+
+// Widget CSS properties:
+@property --rainbow-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 25deg;
+}
+
+.widget-group {
+    .material-symbols-outlined {
+        opacity: 0.6;
+    }
+
+    .widget-number-icon .widget-content {
+        display: grid;
+        grid-template-columns: 1fr 4fr;
+        gap: 1.25rem;
+        align-items: end;
+
+        span.material-symbols-outlined {
+            font-size: 4.2rem;
+        }
+
+        span.ilt-icon {
+            font-size: 4.125rem;
+
+            svg {
+                width: 1em;
+                height: 1em;
+                aspect-ratio: 1;
+                transform: translateY(-0.1em);
+            }
+        }
+
+        // noinspection SassScssResolvedByNameOnly
+        @include media-breakpoint-only(sm) {
+            display: block;
+        }
+
+        // noinspection SassScssResolvedByNameOnly
+        @include media-breakpoint-only(md) {
+            display: block;
+        }
+    }
+
+    .widget {
+        flex: 1 0 0;
+        min-width: 100%;
+        overflow: visible;
+
+        // noinspection SassScssResolvedByNameOnly
+        @include media-breakpoint-up(sm) {
+            min-width: 30%;
+        }
+
+        .widget-content {
+            border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+            border-radius: var(--bs-border-radius);
+            padding: $widget-spacing * 3 $widget-spacing * 3;
+            background-image: var(--bs-gradient);
+
+            &.blue {
+                // figma specified widget
+                --bs-border-color: hsla(var(--ilt-blue-900-hsl) / 50%);
+                --bs-text-opacity: 1;
+
+                // figma exports 76.68deg
+                background: linear-gradient(256.68deg, var(--ilt-blue) 3.44%, var(--ilt-blue-900) 96.56%);
+                box-shadow: var(--ilt-box-shadow);
+                border-radius: $widget-border-radius;
+                color: var(--ilt-yellow);
+                padding: $widget-spacing * 2.5 $widget-spacing * 2.5;
+
+                .ilt-icon {
+                    opacity: 1;
+                    color: var(--ilt-blue-350);
+                }
+
+                .material-symbols-outlined {
+                    opacity: 1;
+                    color: var(--ilt-blue-350);
+                }
+
+                dl {
+                    dt {
+                        // noinspection SassScssResolvedByNameOnly
+                        font-family: $display-font-family;
+                        opacity: 1;
+                        color: var(--bs-white);
+                        line-height: 1.1175;
+                    }
+
+                    dd {
+                        // noinspection SassScssResolvedByNameOnly
+                        font-family: $numbers-font-family;
+                        opacity: 1;
+                        line-height: 1;
+                    }
+                }
+            }
+
+            &.blue-classic {
+                --bs-bg-opacity: 0.1;
+                --bs-text-opacity: 0.9;
+
+                color: rgba(var(--bs-ilt-blue-rgb), var(--bs-text-opacity));
+                background-color: rgba(var(--bs-ilt-blue-rgb), var(--bs-bg-opacity));
+            }
+
+            &.white-classic {
+                --bs-bg-opacity: 0.8;
+                --bs-text-opacity: 1;
+
+                color: rgba(var(--bs-dark-rgb), var(--bs-text-opacity));
+                background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity));
+            }
+
+            &.black-classic {
+                --bs-bg-opacity: 0.9;
+                --bs-text-opacity: 1;
+
+                color: rgba(var(--bs-white-rgb), var(--bs-text-opacity));
+                background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity));
+
+                .material-symbols-outlined {
+                    opacity: 0.3;
+                }
+            }
+
+            &.modern {
+                --bs-bg-opacity: 0.8;
+                --bs-text-opacity: 0.9;
+
+                position: relative;
+                overflow: clip;
+                color: rgba(var(--bs-ilt-blue-rgb), var(--bs-text-opacity));
+                background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity));
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    background-image: conic-gradient(
+                        from var(--rainbow-angle) at 50% 50%,
+                        #{generate-rainbow-gradient(10, 50, 50)}
+                    );
+                    filter: blur($widget-spacing);
+                    z-index: -2;
+                    opacity: 0.9;
+                    scale: 1;
+                    animation: 10s ease-in-out rotate-rainbow-gradient infinite both;
+                    transition: all 0.25s ease;
+                }
+
+                .material-symbols-outlined {
+                    opacity: 0.5;
+                    color: transparent;
+                    animation: 10s ease-in-out rotate-rainbow-gradient infinite both;
+                    background-clip: text;
+                    background-image: conic-gradient(
+                        from var(--rainbow-angle) at 0 0,
+                        #{generate-rainbow-gradient(10, 50, 30)}
+                    );
+                    mix-blend-mode: darken;
+                    transition: all 0.25s ease;
+                }
+            }
+
+            // @todo reorganise scss to properly support themes
+            // stylelint-disable no-descending-specificity
+            dl,
+            dt,
+            dd {
+                margin: 0;
+                padding: 0;
+                line-height: 1;
+            }
+
+            dl {
+                overflow: hidden;
+            }
+
+            dt {
+                font-weight: 600;
+                font-size: 1.125rem;
+                height: 2lh;
+                overflow: clip;
+                text-wrap: balance;
+                opacity: 0.5;
+            }
+
+            // noinspection SassScssResolvedByNameOnly
+            dd {
+                font-family: $display-font-family;
+                font-size: calc(1.575rem + 3.9vw);
+                font-weight: 500;
+                opacity: 0.815;
+
+                @include media-breakpoint-up(xl) {
+                    font-size: 4.5rem;
+                }
+
+                &,
+                & > span {
+                    display: block;
+                    overflow: clip;
+                    text-overflow: ellipsis;
+                }
+            }
+        }
+
+        @for $i from 1 through 4 {
+            &:nth-of-type(#{$i}) + .widget .modern::before,
+            &:nth-of-type(#{$i}) + .widget .modern .material-symbols-outlined {
+                animation-delay: #{$i * 1}s;
+            }
+        }
+    }
+}

@@ -1,0 +1,40 @@
+/* Font uses */
+@use '@fontsource-variable/source-sans-3/scss/mixins' as SourceSans;
+@use '@fontsource-variable/quicksand/scss/mixins' as QuickSand;
+@use '@fontsource-variable/montserrat/scss/mixins' as MontSerrat;
+
+// Custom export of SourceSans.
+// @import '@fontsource-variable/source-sans-3';
+@include SourceSans.faces(
+    $subsets: (
+        latin,
+        latin-ext,
+        greek,
+        cyrillic,
+    ),
+    $family: 'Source Sans 3 Variable',
+    $directory: '@fontsource-variable/source-sans-3/files'
+);
+
+// @import '@fontsource-variable/quicksand';
+@include QuickSand.faces(
+    $subsets: (
+        latin,
+        latin-ext,
+    ),
+    $family: 'Quicksand Variable',
+    $directory: '@fontsource-variable/quicksand/files'
+);
+
+// @import '@fontsource-variable/montserrat';
+@include MontSerrat.faces(
+    $subsets: (
+        latin,
+        /*
+        latin-ext,
+        cyrillic,
+         */
+    ),
+    $family: 'Montserrat Variable',
+    $directory: '@fontsource-variable/montserrat/files'
+);

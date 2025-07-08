@@ -1,0 +1,289 @@
+header {
+    // noinspection SassScssResolvedByNameOnly
+    .navbar {
+        --bs-navbar-brand-font-size: 1.25rem;
+        --bs-navbar-padding-y: #{$us-ui-padding};
+        --bs-navbar-toggler-focus-width: 0.1875rem;
+        --bs-navbar-toggler-border-color: transparent;
+        --bs-nav-link-font-size: 1.125rem;
+        --bs-navbar-active-color: var(--ilt-blue);
+
+        // noinspection SassScssResolvedByNameOnly
+        font-family: $headings-font-family;
+        box-shadow: var(--ilt-header-box-shadow);
+
+        // Explicit height cannot be set due to the off-canvas menu. Instead,
+        // a min-height should be set and hope that the off menu has at least
+        // one valid option so it can be taller by default than the bar.
+        min-height: 6rem;
+
+        // Shadows on top of absolutely positioned elements (bg-3d-grid) is
+        // tricky. Even if navbar is not a part of the grid, its shadow won't
+        // blend properly, unless the nav element has a higher z-index.
+        z-index: 6;
+
+        // Nav-bar Branding
+        .navbar-brand {
+            font-weight: 600;
+            line-height: 1.125;
+
+            &:focus-visible {
+                background-color: $focus-ring-color;
+                outline: none;
+            }
+        }
+
+        --bs-navbar-brand-margin-end: 0;
+
+        .navbar-brand-parent {
+            margin-inline-end: 0.25rem;
+
+            &:focus-visible {
+                background-color: $focus-ring-color;
+                outline: none;
+            }
+
+            svg {
+                min-width: 100px;
+            }
+        }
+
+        @media (width < 25rem) {
+            .navbar-brand {
+                overflow: hidden;
+                max-width: 14rem;
+                white-space: wrap;
+            }
+        }
+
+        .navbar-nav {
+            --bs-nav-link-color: var(--ilt-blue-sec);
+            --bs-nav-link-font-weight: 500;
+        }
+
+        .nav-link {
+            position: relative;
+            margin-inline: $us-ui-padding * 0.5;
+            line-height: 1;
+
+            // Set the nav-link styles for offset state:
+            margin-block: 0.25rem;
+            padding: 1rem 0 1rem 1rem;
+            border-radius: $border-radius;
+
+            &:hover,
+            &:focus {
+                background-color: rgba(var(--bs-ilt-yellow-rgb), 0.2);
+            }
+
+            &.active {
+                background-color: rgba(var(--bs-ilt-yellow-rgb), 0.5);
+                transition: none;
+            }
+
+            // Set the nav-link styles for bar state:
+            @include media-breakpoint-up(md) {
+                border-radius: 0;
+
+                &.active,
+                &:hover:not(.active),
+                &:focus:not(.active) {
+                    background-color: transparent;
+
+                    --local-shadow-color: var(--bs-navbar-active-color);
+
+                    &::before {
+                        display: block;
+                        content: '';
+                        position: absolute;
+                        inset: 0 -1px;
+                        width: calc(100% + 1px);
+                        height: 100%;
+                        box-shadow: 0 0.25rem 0 0 var(--local-shadow-color);
+                    }
+                }
+
+                &:hover:not(.active),
+                &:focus:not(.active) {
+                    box-shadow: none;
+
+                    --local-shadow-color: rgba(var(--bs-ilt-yellow-rgb), 1);
+                }
+            }
+        }
+
+        // Navigation items with icon.
+        ul.navbar-nav > li.nav-item.nav-item-icon {
+            position: relative;
+
+            .nav-link {
+                &.dropdown-toggle {
+                    &::after {
+                        display: none;
+                    }
+
+                    .span-item-username {
+                        display: flex;
+                        align-items: center;
+
+                        &::after {
+                            content: '...';
+                            width: 100%;
+                            height: 100%;
+                            line-height: 1;
+                            margin-inline-start: 0.5em;
+                        }
+                    }
+
+                    @include media-breakpoint-down(md) {
+                        &.show {
+                            border-radius: 0.25em 0.25em 0 0;
+                            background: rgba(var(--bs-ilt-blue-350-rgb), 0.2);
+                        }
+
+                        &:not(.show):has(.span-item-username) {
+                            background: rgba(var(--bs-ilt-blue-350-rgb), 0.05);
+                        }
+                    }
+                }
+
+                .span-item-icon {
+                    margin-inline: auto 0.5em;
+                }
+            }
+
+            @include media-breakpoint-down(md) {
+                .nav-item.nav-item-user-options {
+                    margin-block-start: auto;
+                    outline: 2px solid red;
+                }
+            }
+
+            @include media-breakpoint-up(md) {
+                margin-inline-start: 1rem;
+
+                ~ li.nav-item.nav-item-icon {
+                    margin-inline-start: 0;
+                }
+
+                .nav-link {
+                    margin-inline: 0;
+                    padding-inline: 0;
+
+                    .span-item-icon {
+                        margin-inline: auto;
+
+                        svg.lucide {
+                            min-width: 44px;
+                        }
+                    }
+
+                    &.dropdown-toggle {
+                        position: relative;
+
+                        &::after {
+                            display: inline-block;
+                            inset: 45% 30px;
+                            position: absolute;
+                            transition: rotate 0.15s ease-in-out;
+                        }
+
+                        &.show::after {
+                            rotate: 180deg;
+                        }
+                    }
+                }
+
+                &::after {
+                    position: absolute;
+                    content: '';
+                    width: 1px;
+                    height: 75%;
+                    inset: -1px;
+                    border-inline-start: 0.5px solid hsla(var(--ilt-blue-hsl) / 50%);
+                    align-self: center;
+                    z-index: -1;
+                }
+            }
+        }
+
+        .dropdown-menu {
+            box-shadow: var(--ilt-header-box-shadow);
+
+            --bs-dropdown-padding-y: 0rem;
+            --bs-dropdown-padding-x: 0rem;
+            --bs-dropdown-item-padding-x: 1rem;
+            --bs-dropdown-item-padding-y: 0.5rem;
+            --bs-dropdown-link-color: var(--ilt-blue-sec);
+
+            > li {
+                border-radius: inherit;
+
+                > a,
+                > button {
+                    border-radius: inherit;
+                }
+            }
+
+            .dropdown-item {
+                &:hover,
+                &:active,
+                &:focus-visible {
+                    color: var(--bs-black);
+                    background: rgba(var(--bs-ilt-yellow-rgb), 0.2);
+                }
+
+                &:focus-visible {
+                    outline: none;
+                    box-shadow: 0 0 0 0.25em rgba(var(--bs-ilt-yellow-rgb), 1);
+                }
+            }
+
+            @include media-breakpoint-down(md) {
+                background: rgba(var(--bs-ilt-blue-350-rgb), 0.05);
+                box-shadow: none;
+                border: none;
+                margin-inline: 0.5rem;
+                margin-block-start: -0.25em;
+                border-radius: 0 0 0.5em 0.5em;
+
+                .dropdown-item {
+                    border-radius: 0.5em;
+                    font-size: 1.125em;
+
+                    &:hover,
+                    &:focus-visible {
+                        background: rgba(var(--bs-ilt-yellow-rgb), 0.2);
+                    }
+
+                    &:focus-visible {
+                        outline: none;
+                        box-shadow: inset 0 0 0 0.25em rgba(var(--bs-ilt-yellow-rgb), 0.25);
+                    }
+                }
+            }
+        }
+
+        .offcanvas {
+            --bs-offcanvas-bg: hsla(var(--ilt-blue-gray-200-hsl) / 90%);
+
+            -webkit-backdrop-filter: (1rem);
+            backdrop-filter: blur(1rem);
+        }
+
+        .offcanvas-header {
+            border-style: solid;
+            border-color: var(--bs-ilt-yellow);
+            margin-inline: 1rem;
+            padding-inline: 0;
+
+            &:first-child {
+                border-width: 0 0 0.25rem;
+            }
+
+            &:last-child {
+                border-width: 0.25rem 0 0;
+            }
+        }
+    }
+}

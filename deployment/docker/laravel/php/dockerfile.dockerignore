@@ -1,0 +1,46 @@
+# This file contains files which should be excluded from builds.
+
+# Environment files
+.env
+.env.*
+!.env.example.production
+
+# Version control
+.git
+.gitattributes
+.gitignore
+
+# Testing
+tests/
+phpunit.xml
+.env.testing
+
+# Development tools & configs
+.ddev/
+.editorconfig
+.styleci.yml
+README.md
+CHANGELOG.md
+docker-compose.yml
+Dockerfile*
+
+# Laravel development
+bootstrap/cache/
+storage/logs/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+
+# IDE files
+.vscode/
+.gemini/
+.idea/
+*.swp
+*.swo
+*~
+CLAUDE.md
+GEMINI.md
+
+# Deployment specific
+deployment/docker
+!deployment/docker/laravel/php/entrypoint.d

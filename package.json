@@ -59,6 +59,6 @@
         "pinia": "^3.0",
         "vue3-autocounter": "^1.0",
         "vue3-table-lite": "^1.4",
-        "ziggy-js": "^2.4.2"
+        "ziggy-js": "^2.6.0"
     }
 }

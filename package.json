@@ -26,7 +26,7 @@
         "@vue/server-renderer": "^3.5",
         "@vue/tsconfig": "^0.7",
         "autoprefixer": "^10.4.21",
-        "axios": "^1.10",
+        "axios": "^1.11",
         "eslint": "^9.29",
         "eslint-plugin-vue": "^9.33",
         "laravel-vite-plugin": "^1.3",
